@@ -15,19 +15,6 @@ const IncomeTaxBrackets = [
     {threshold: 960000, rate: 0.45, deduction: 181920}
 ];
 
-function income_tax(total_income_in_tax) {
-    let p_tax_result = 0;
-    for (let i = IncomeTaxBrackets.length - 1; i >= 0; i--) {
-        const bracket = IncomeTaxBrackets[i];
-        if (total_income_in_tax > bracket.threshold) {
-            p_tax_result = total_income_in_tax * bracket.rate - bracket.deduction;
-            break;
-        }
-    }
-
-    return p_tax_result;
-}
-
 const BonusTaxBrackets = [
     {threshold: 0, rate: 0.03, deduction: 0},
     {threshold: 36000, rate: 0.1, deduction: 210},
@@ -38,23 +25,35 @@ const BonusTaxBrackets = [
     {threshold: 960000, rate: 0.45, deduction: 15160}
 ];
 
-function bonus_tax(b_tax) {
+
+function tax(income, brackets) {
     let p_tax_result = 0;
-    for (let i = BonusTaxBrackets.length - 1; i >= 0; i--) {
-        const bracket = BonusTaxBrackets[i];
-        if (b_tax > bracket.threshold) {
-            p_tax_result = b_tax * bracket.rate - bracket.deduction;
+    for (let i = brackets.length - 1; i >= 0; i--) {
+        const bracket = brackets[i];
+        if (income > bracket.threshold) {
+            p_tax_result = income * bracket.rate - bracket.deduction;
             break;
         }
     }
-
     return p_tax_result;
+}
+
+function income_tax(income) {
+    return tax(income, IncomeTaxBrackets);
+}
+
+function bonus_tax(bonus) {
+    return tax(bonus, BonusTaxBrackets);
 }
 
 const option = {
     title: {
         text: 'Bonus VS Consolidated Income',
         subtext: 'x means bonus'
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {type: 'shadow'}
     },
     xAxis: {data: []},
     yAxis: {},
@@ -85,7 +84,8 @@ function loadData() {
     let min_tax = total;
     let best_bonus = 0;
     const step = 12000
-    for (let x = 0; x <= total_income_in_tax; x += step) {
+    let max_x = Math.min(total_income_in_tax, 2 * step + BonusTaxBrackets[BonusTaxBrackets.length - 1].threshold)
+    for (let x = 0; x <= max_x; x += step) {
         option.xAxis.data.push(x);
         const itr_income = total_income_in_tax - x;
         const tax = income_tax(itr_income) + bonus_tax(x);

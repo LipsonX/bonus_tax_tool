@@ -1,21 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="cache-control" content="public;max-age=360000">
     <meta charset="utf-8"/>
-    <title>年终奖 VS 分月发</title>
-    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.3.0/echarts.min.js"></script>
+    <title>年终奖分配最优解可视化</title>
+    <script src="./echarts.min.js"></script>
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
 <div>
-    全年税前总收入：<input id="total_income_before_tax" value="1000000"/><br/>
-    全年免税金额：<input id="total_tax_free" value="200000"/><br/>
+    <h2>年终奖分配最优解可视化</h2>
+<!--    <p style="text-align: right">才智，勤奋，专业，资历，关系与薪酬函数难以计算，但个税是简单明确的 &#45;&#45; lipson</p>-->
+    <hr/>
+    <p>总应纳税税前收入确定的情况下，年终奖变量对总个税本质上是一个一元的分段函数，即一元一次线性规划，最优解如下</p>
+    <table>
+        <thead><tr><th>全年<b style="color: red">应纳税</b>所得额</th><th>最优年终奖</th></tr></thead>
+        <tbody>
+        <tr><td>(36000, 203100]</td><td>36000</td></tr>
+        <tr><td>(203100, 672000]</td><td>144000</td></tr>
+        <tr><td>(672000, 1277500]</td><td>300000</td></tr>
+        <tr><td>(1277500, 1452500]</td><td>420000</td></tr>
+        <tr><td>(1452500, +∞]</td><td>660000</td></tr>
+        </tbody>
+    </table>
+    <hr/>
+    <div><label for="total_income_before_tax">全年税前总收入：</label><input id="total_income_before_tax" oninput="loadData()" value="1000000"/></div>
+    <div><label for="total_tax_free">全年免税金额：</label><input id="total_tax_free" oninput="loadData()" value="200000"/><div>
     <div><i>全年免税金额 = 减免费用 + 专项扣除合计 + 专项附加扣除合计 + 其他扣除合计 </i></div>
-    <div><i>eg. 全年免税金额 20w = 6w(起征) + 6w(五险二金) + 2.4w(育儿) + 1.8w(育老) + 1.8w(房贷) + 1.2w(个养) + 0.8w(教育)</i></div>
+    <div><i>eg. 全年免税金额 20w = 6w(起征) + 6w(五险二金) + 2.4w(育儿) + 1.8w(育老) + 1.8w(房贷) +
+        1.2w(个养) + 0.8w(教育)</i></div>
     <div><span>年终奖最优解: </span><span id="best_solution">0</span></div>
     <div><span>最优解总纳税: </span><span id="tax">0</span></div>
     <div><span>最优解年终税: </span><span id="tax_bonus">0</span></div>
     <div><span>最优解综合税: </span><span id="tax_income">0</span></div>
-    <button onclick="loadData();">reload</button>
 </div>
 <div id="main" style="width: 100%;height:480px;"></div>
 <script src="./main.js"></script>
